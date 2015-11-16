@@ -6,7 +6,8 @@ from Bio import SeqIO
 import os
 import getopt
 import glob
-from subprocess import call
+import subprocess
+import shlex
 
 ####################################################################
 ##This script take as input a file with the paths to all VCFs you 
@@ -61,13 +62,14 @@ def get_arguments():
 def combine_variants(inputList):
     """Merge VCFs with GATK CombineVariants"""
     print("Calling GATK CombineVariants")
-    call("java -Xmx4g -jar /opt/PepPrograms/GenomeAnalysisTK.jar \
+    cmd = ("java -Xmx4g -jar /opt/PepPrograms/GenomeAnalysisTK.jar \
 -T CombineVariants \
 -R {0} ".format(args.reference) +
 "-nt {0} --variant ".format(args.threads) +
 " --variant ".join(inputList) +
 " -o {0}.vcf ".format(args.project) +
-"-genotypeMergeOptions UNIQUIFY", shell=True)
+"-genotypeMergeOptions UNIQUIFY")
+    subprocess.call(shlex.split(cmd))
 
 def make_inputList_file():
     """Make inputList from file"""
