@@ -68,7 +68,8 @@ def combine_variants(inputList):
 "-nt {0} --variant ".format(args.threads) +
 " --variant ".join(inputList) +
 " -o {0}.vcf ".format(args.project) +
-"-genotypeMergeOptions UNIQUIFY")
+"-genotypeMergeOptions UNIQUIFY \
+--excludeNonVariants")
     subprocess.call(shlex.split(cmd))
 
 def make_inputList_file():
