@@ -50,12 +50,12 @@ def quantify_missingness(alnIN):
         no_gaps = seq_record.seq.count("-")
         print("{0} has {1} gaps".format(seq_record.id, no_gaps))
         per_missing = float(no_gaps)/len(seq_record.seq) * 100
-        d[seq_record.id] = [no_gaps, per_missing]
+        d[seq_record.id] = [no_gaps, per_missing, len(seq_record.seq)]
     return d
 
 def make_plot(d, alnIN):
     """make a plot of the missing data"""
-    plotFileName = alnIN.split(".")[0] + "missingData.png"
+    plotFileName = alnIN.split(".")[0] + "_missingData.png"
     x = []
     for key in d:
         x.append(d[key][1])
@@ -71,10 +71,11 @@ def write_file(d, alnIN):
     outFileName = alnIN.split(".")[0] + "_missingData.txt"
     with open(outFileName, 'w') as outfile:
         for samp in d:
-            outfile.write('%s\t%i\t%f\n' %
+            outfile.write('%s\t%i\t%f\t%i\n' %
                 (samp,
                 d[samp][0],
-                d[samp][1]))
+                d[samp][1],
+                d[samp][2]))
 
 d = quantify_missingness(alnIN)
 make_plot(d, alnIN)
