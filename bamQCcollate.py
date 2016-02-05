@@ -58,7 +58,7 @@ def make_dict(inputList):
             for i, line in enumerate(infile):
                 line = line.strip()
                 if i == 5:
-                    sample = line.split("/")[-1].split(".")[0]
+                    sample = line.split("=")[1].split("/")[-1].split(".")[0]
                     print sample
                     d[sample] = {}
                 elif i == 20:
@@ -97,25 +97,66 @@ def make_dict(inputList):
                 elif i == 49:
                     GCper = line.split()[-1].strip("%")
                     d[sample]["GCper"] = GCper
+                elif i == 54:
+                    errRate = line.split()[-1]
+                    d[sample]["errRate"] = errRate
+                elif i == 55:
+                    misMat = line.split()[-1]
+                    d[sample]["misMat"] = misMat
+                elif i == 56:
+                    numIns = line.split()[-1]
+                    d[sample]["numIns"] = numIns
+                elif i == 57:
+                    insPer = line.split()[-1].strip("%")
+                    d[sample]["insPer"] = insPer
+                elif i == 58:
+                    numDel = line.split()[-1]
+                    d[sample]["numDel"] = numDel
+                elif i == 59:
+                    delPer = line.split()[-1].strip("%")
+                    d[sample]["delPer"] = delPer
+                elif i == 60:
+                    homInd = line.split()[-1].strip("%")
+                    d[sample]["homInd"] = homInd
                 elif i == 65:
                     meanCov = line.split()[-1].strip("X")
                     d[sample]["meanCov"] = meanCov
                 elif i == 66:
                     stdCov = line.split()[-1].strip("X")
                     d[sample]["stdCov"] = stdCov
+                elif i == 77:
+                    perGen10X = line.split()[3].strip("%")
+                    d[sample]["perGen10X"] = perGen10X
+                elif i == 82:
+                    perGen15X = line.split()[3].strip("%")
+                    d[sample]["perGen15X"] = perGen10X
+                elif i == 87:
+                    perGen20X = line.split()[3].strip("%")
+                    d[sample]["perGen20X"] = perGen20X
+                elif i == 97:
+                    perGen30X = line.split()[3].strip("%")
+                    d[sample]["perGen30X"] = perGen30X
     return d
 
 def write_file(d):
     with open(args.outputFile, 'w') as outfile:
-        outfile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %
-            ("Sample", "meanCov", "stdCov", "meanMQ", "perMapped", "dupRate",
-            "meanIns", "medIns", "stdIns", "GCper", "A", "C", "G", "T", "N"))
+        outfile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %
+            ("Sample", "meanCov", "stdCov", "meanMQ", "perMapped", 
+            "perGen10X", "perGen15X", "perGen20X", "perGen30X", "dupRate",
+            "errRate", "misMat", "numIns", "insPer", "numDel", "delPer", 
+            "homInd", "meanIns", "medIns", "stdIns", "GCper", "A", "C", "G",
+            "T", "N"))
         for key in d:
-            outfile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %
-                (key, d[key]["meanCov"], d[key]["stdCov"], d[key]["meanMQ"], 
-                d[key]["perMapped"], d[key]["dupRate"], d[key]["meanIns"], 
-                d[key]["medIns"], d[key]["stdIns"], d[key]["GCper"], d[key]["A"], 
-                d[key]["C"], d[key]["G"], d[key]["T"], d[key]["N"]))
+            outfile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %
+                (key, d[key]["meanCov"], d[key]["stdCov"], d[key]["meanMQ"],
+                d[key]["perMapped"], d[key]["perGen10X"], 
+                d[key]["perGen15X"], d[key]["perGen20X"], 
+                d[key]["perGen30X"], d[key]["dupRate"], d[key]["errRate"],
+                d[key]["misMat"], d[key]["numIns"], d[key]["insPer"],
+                d[key]["numDel"], d[key]["delPer"], d[key]["homInd"],
+                d[key]["meanIns"], d[key]["medIns"], d[key]["stdIns"], 
+                d[key]["GCper"], d[key]["A"], d[key]["C"], d[key]["G"], 
+                d[key]["T"], d[key]["N"]))
 
 args = get_arguments()
 inputList = make_inputList()
