@@ -15,9 +15,11 @@ require("reshape2")
 
 This is meant to look for outlier samples run through the Pepperell Lab RGA Pipeline. Start by reading in the output from my bamQCcollate.py script (https://github.com/ONeillMB1/alignmentQC/). Note that this script pulls information for files you specifify from summary files produced by the program Qualimap (http://qualimap.bioinfo.cipf.es). 
 
+A brief look at the dataframe structure:
+
 ```{r readFile, echo=FALSE}
 #specify paths to input files
-filepath <- "C:/Users/Mary/PepLab/data/Phylogeography/QualityControl/all_RGA_multi_collatedBamQC.txt"
+filepath <- "path/to/output/from/bamQCcollate.py"
 
 #read in the files
 dat <- read.csv(filepath, header=T, sep='\t', na.strings="NA")
@@ -37,7 +39,9 @@ str(dat)
 There are `r length(dat$Sample)` samples in the dataset.
 
 
-##Mean Mapping Quality
+##Mapping Quality
+
+###Mean Mapping Quality
 
 ```{r MQ, echo=FALSE}
 
@@ -72,7 +76,7 @@ oMQ[order(oMQ$meanMQ), c(1,4,2:3,5:9,21)]
 
 ##Coverage
 
-#Mean Coverage
+###Mean Coverage
 
 ```{r cov, echo=FALSE}
 
@@ -94,7 +98,7 @@ plot(cov)
 The dashed red line indicates an average coverage of 30X, the blue and average coverage of 20X. Note the log scale. Perhaps more important is the percentage of the reference genome covered by a given coverage.
 
 
-#Percent Genome Covered at >= X
+###Percent Genome Covered at >= X
 
 ```{r covPlot, echo=FALSE}
 
@@ -117,7 +121,18 @@ plot(covPlot)
 
 What is a good threshold?
 
-#Relationship Between Mean Coverage and the Percent Genome Covered By X
+Below is the info pertaining to the outliers for the 10X threshold:
+
+```{r lowPC, echo=FALSE}
+
+LB <- unname(quantile(dat$perGen10X, probs=0.25)) - 1.5*unname(IQR(dat$perGen10X))
+
+oPC <- dat[dat$perGen10X < LB,]   
+
+oPC[order(oPC$perGen10X), c(1,4,2:3,5:9,21)]
+```
+
+###Relationship Between Mean Coverage and the Percent Genome Covered By X
 
 ```{r meanCov_perCov, echo=FALSE}
 
@@ -137,17 +152,6 @@ plot(MCvPC)
 ```
 
 Again note that the x-axis is on a log scale.
-
-Below is the info pertaining to the outliers for the 10X threshold:
-
-```{r lowPC, echo=FALSE}
-
-LB <- unname(quantile(dat$perGen10X, probs=0.25)) - 1.5*unname(IQR(dat$perGen10X))
-
-oPC <- dat[dat$perGen10X < LB,]   
-
-oPC[order(oPC$perGen10X), c(1,4,2:3,5:9,21)]
-```
 
 
 ##Percent of Reads Mapped
@@ -182,7 +186,7 @@ oPM[order(oPM$perMapped), c(1,4,2:3,5:9,21)]
 
 Lets look at the relationship between percent mapped and mean coverage.
 
-#Relationship Between Percentage of Reads Mapped and the Mean Coverage
+###Relationship Between Percentage of Reads Mapped and the Mean Coverage
 ```{r PMvCov, echo=FALSE}
 
 PMvCov <- ggplot(dat, aes(x=perMapped, y=meanCov)) + 
@@ -223,6 +227,8 @@ How should we interpret the duplication rate? We mark duplicates in our pipeline
 
 ##GC Percentage
 
+###GC Percentage
+
 ```{r gc, echo=FALSE}
 
 gc <- ggplot(dat, aes(x=Type, y=GCper)) + 
@@ -239,7 +245,7 @@ plot(gc)
 
 How much spread is acceptable in terms of GC content? Does it vary by lineage/clade? You will need to incorporate more data to look at this kind of thing.
 
-#Percent Reads Mapped vs GC Percentage
+###Percent Reads Mapped vs GC Percentage
 
 ```{r corr, echo=FALSE}
 
@@ -257,9 +263,10 @@ plot(corr)
 
 ##Nucleotide Content
 
+###Nucleotide Content
+
 ```{r nuc, echo=FALSE}
 
-require("reshape")
 nuc <- dat[,c('Sample','Type', 'A','C','G','T')]
 nuc.m <- melt(nuc, id = c('Sample', 'Type'))
 
@@ -275,6 +282,8 @@ plot(nucPlot)
 ```
 
 The G-C content should be the about the same for each sample, so maybe I can identify some outliers by plotting the G vs C content and T vs A.
+
+###G vs. C
 
 ```{r CvG, echo=FALSE}
 
@@ -292,7 +301,7 @@ plot(nuc2)
 ```
 
 
-Lets move on and do the same for A vs T. 
+###T vs. A
 ```{r AvT, echo=FALSE}
 
 nuc3 <- ggplot(dat, aes(x=A, y=T)) + 
@@ -310,6 +319,8 @@ plot(nuc3)
 
 ##Mismatches
 
+###Mismatches
+
 ```{r misMat, echo=FALSE}
 
 misMat <- ggplot(dat, aes(x=Type, y=misMat)) + 
@@ -325,7 +336,7 @@ plot(misMat)
 ```
 
 
-#Relationship Between Mismatches and Mean Coverage
+###Relationship Between Mismatches and Mean Coverage
 
 ```{r MisVsCov, echo=FALSE}
 
@@ -345,4 +356,4 @@ plot(MisVsCov)
 
 You can imagine that if the error rate is constant, as you increase coverage you are bound to have more incorrecltly called bases, but our power to detect such even will increase. Perhaps this should be normalized by the total number of bases (mapped). 
 
-#Have fun exploring your data!
+###Have fun exploring your data!
