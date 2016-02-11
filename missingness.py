@@ -42,16 +42,27 @@ def get_arguments():
 args = get_arguments()
 alnIN = args.inputFile
 
+print("By default this script will count '-', '?', and 'N' as missing data. Edit script if you prefer different behavior.")
+
 def quantify_missingness(alnIN):
     d = {}
     """for every strain in the aln, count the number of missing data sites"""
     for seq_record in SeqIO.parse(alnIN, "fasta"):
-        print("Processing sample {0}".format(seq_record.id))
-        no_gaps = seq_record.seq.count("-")
-        print("{0} has {1} gaps".format(seq_record.id, no_gaps))
+        #print("Processing sample {0}".format(seq_record.id))
+        no_gaps = sum(seq_record.seq.count(x) for x in ("-", "?", "N"))
+        #print("{0} has {1} gaps".format(seq_record.id, no_gaps))
         per_missing = float(no_gaps)/len(seq_record.seq) * 100
         d[seq_record.id] = [no_gaps, per_missing, len(seq_record.seq)]
     return d
+
+def count_mismatches(alnIN, refIN):
+    mD = {}
+    ref_seq = SeqIO.read(refIN, "fasta")
+    """for every strain in the aln, count the number of mismatches to ref"""
+    for seq_record in SeqIO.parse(alnIN, "fasta"):
+        print("Processing sample {0}".format(seq_record.id))
+        count = pairwise2.align.globalxx(ref_seq, seq_record)
+        print("{0} has {1} mismatch relative to ref seq".format(seq_record.id, count))
 
 def make_plot(d, alnIN):
     """make a plot of the missing data"""
@@ -61,7 +72,7 @@ def make_plot(d, alnIN):
         x.append(d[key][1])
     n, bins, patches = plt.hist(x, 100, normed=1, alpha=0.75)
     plt.xlabel('Percent Missing')
-    plt.ylabel('No. of Isolates')
+    plt.ylabel('Percent of Isolates')
     plt.title('Histogram of Missing Data')
     plt.savefig(plotFileName)
     plt.close()
