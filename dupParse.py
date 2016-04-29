@@ -47,7 +47,7 @@ def get_arguments():
 
 def make_genomes():
     samples = {}
-    with open(args.inputFile, 'r') as infile:
+    with open(args.inputFile, 'r') as infile, open(args.output + '.simplified', 'w') as outfile:
         for line in infile:
             line = line.strip().split("\t")
             if len(line) > 1:
@@ -65,6 +65,10 @@ def make_genomes():
                 for i in range((start-1),stop):
                     genome[i] = 1
                 samples[samp] = genome
+                outfile.write('%s\t%i\t%i\n' %
+                (samp,
+                start,
+                stop))
             else:
                 continue
     return(samples)
