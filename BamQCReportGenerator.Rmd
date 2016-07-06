@@ -1,5 +1,5 @@
 ---
-title: "<Your Project Title Here> QC Report"
+title: "Brown etal (Mtb Capture) QC Report"
 author: "BamQCReportGenerator.Rmd written by: Mary B. O'Neill, Lab Member Generating Report: <Your Name> "
 date: "<date>"
 output: html_document
@@ -19,10 +19,17 @@ A brief look at the dataframe structure:
 
 ```{r readFile, echo=FALSE}
 #specify paths to input files
-filepath <- "path/to/output/from/bamQCcollate.py"
+filepath <- "C:/Users/Mary/PepLab/data/Mtb_invitro/Brown_bamQCcollated.txt"
 
 #read in the files
 dat <- read.csv(filepath, header=T, sep='\t', na.strings="NA")
+
+dat$misMat <- as.numeric(gsub(",","",dat$misMat))
+dat$numIns <- as.numeric(gsub(",","",dat$numIns))
+dat$numDel <- as.numeric(gsub(",","",dat$numDel))
+dat$meanIns <- as.numeric(gsub(",","",dat$meanIns))
+dat$medIns <- as.numeric(gsub(",","",dat$medIns))
+dat$stIns <- as.numeric(gsub(",","",dat$stIns))
 
 #Force the sample to a character
 dat$Sample <- as.character(dat$Sample)
@@ -47,7 +54,7 @@ There are `r length(dat$Sample)` samples in the dataset.
 
 MQ <- ggplot(dat, aes(Type, meanMQ)) + 
   geom_boxplot(fill='#A4A4A4', color="black") +
-  scale_y_continuous(limits = c(54,61)) +
+  scale_y_continuous() +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()) +
