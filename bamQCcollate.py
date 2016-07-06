@@ -58,7 +58,7 @@ def make_dict(inputList):
             for i, line in enumerate(infile):
                 line = line.strip()
                 if i == 5:
-                    sample = line.split("=")[1].split("/")[-1].split(".")[0]
+                    sample = line.split("=")[1].split("/")[-1].split(".")[0].strip()
                     print sample
                     d[sample] = {}
                 elif i == 20:
@@ -129,7 +129,7 @@ def make_dict(inputList):
                     d[sample]["perGen10X"] = perGen10X
                 elif i == 82:
                     perGen15X = line.split()[3].strip("%")
-                    d[sample]["perGen15X"] = perGen10X
+                    d[sample]["perGen15X"] = perGen15X
                 elif i == 87:
                     perGen20X = line.split()[3].strip("%")
                     d[sample]["perGen20X"] = perGen20X
