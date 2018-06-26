@@ -5,8 +5,7 @@ import os
 import argparse
 from Bio import AlignIO
 
-# This script filters protein groups output from OrthoMCL and compares the core
-# genomes of groups input by the user
+# This identifies gapped positions in an alignment and outputs to a file
 
 def is_file(filename):
     """Checks if a file exists"""
